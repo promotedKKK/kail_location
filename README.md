@@ -3,9 +3,7 @@
 > 调试者的空间坐标实验舱：路线模拟、位置模拟、导航模拟、步频模拟、虚拟定位与 NFC 模拟。
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.kail.location">App 下载</a>
-  ·
-  <a href="传感器参数.md">传感器参数</a>
+  <a href="https://github.com/noellegazelle6/kail_location/releases">App 下载</a>
   ·
   <a href="README_EN.md">English README</a>
 </p>

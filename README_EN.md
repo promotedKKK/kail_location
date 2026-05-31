@@ -3,9 +3,7 @@
 > A spatial control deck for developers and professionals — route simulation, location simulation, navigation simulation, cadence simulation, virtual location, and NFC simulation.
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.kail.location">Download on Google Play</a>
-  ·
-  <a href="传感器参数.md">Sensor Parameters</a>
+  <a href="https://github.com/noellegazelle6/kail_location/releases">Download app</a>
   ·
   <a href="README.md">中文说明</a>
 </p>
