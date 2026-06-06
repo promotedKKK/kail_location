@@ -7,6 +7,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kail.location.models.UpdateInfo
+import com.kail.location.network.RuoYiClient
 import com.kail.location.utils.UpdateChecker
 import com.kail.location.utils.KailLog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,9 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
     private val _installUri = MutableStateFlow<Uri?>(null)
     val installUri: StateFlow<Uri?> = _installUri.asStateFlow()
 
+    private val _noticeList = MutableStateFlow<List<RuoYiClient.NoticeInfo>>(emptyList())
+    val noticeList: StateFlow<List<RuoYiClient.NoticeInfo>> = _noticeList.asStateFlow()
+
     fun checkUpdate(context: Context, isAuto: Boolean = true) {
         UpdateChecker.check(context) { info, _ ->
             _updateInfo.value = info
@@ -39,6 +43,18 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
 
     fun dismissUpdate() {
         _updateInfo.value = null
+    }
+
+    fun checkAnnouncement() {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            RuoYiClient.getNoticeList().onSuccess { list ->
+                _noticeList.value = list
+            }
+        }
+    }
+
+    fun dismissNotice() {
+        _noticeList.value = emptyList()
     }
 
     fun clearInstallUri() {

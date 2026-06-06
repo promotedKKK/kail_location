@@ -25,6 +25,7 @@ import java.util.ArrayList
 import androidx.activity.viewModels
 import com.kail.location.viewmodels.WelcomeViewModel
 import com.kail.location.views.common.UpdateDownloadDialog
+import com.kail.location.views.common.AnnouncementDialog
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
 
@@ -76,6 +77,7 @@ class WelcomeActivity : AppCompatActivity() {
                 val isDownloading by viewModel.isDownloading.collectAsState()
                 val downloadProgress by viewModel.downloadProgress.collectAsState()
                 val installUri by viewModel.installUri.collectAsState()
+                val noticeList by viewModel.noticeList.collectAsState()
 
                 WelcomeScreen(
                     onStartClick = { startMainActivity(isChecked) },
@@ -101,6 +103,7 @@ class WelcomeActivity : AppCompatActivity() {
 
                 LaunchedEffect(Unit) {
                     viewModel.checkUpdate(this@WelcomeActivity, true)
+                    viewModel.checkAnnouncement()
                 }
 
                 if (updateInfo != null) {
@@ -124,6 +127,13 @@ class WelcomeActivity : AppCompatActivity() {
                         viewModel.clearInstallUri()
                         viewModel.dismissUpdate()
                     }
+                }
+
+                if (noticeList.isNotEmpty()) {
+                    AnnouncementDialog(
+                        notices = noticeList,
+                        onDismiss = { viewModel.dismissNotice() }
+                    )
                 }
 
                 if (showAgreementDialog) {

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 import com.kail.location.models.UpdateInfo
+import com.kail.location.network.RuoYiClient
 import com.kail.location.utils.UpdateChecker
 import android.content.Context
 import android.content.Intent
@@ -75,6 +76,9 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
      * 应用更新信息的状态流（若存在）。
      */
     val updateInfo: StateFlow<UpdateInfo?> = _updateInfo.asStateFlow()
+
+    private val _noticeList = MutableStateFlow<List<RuoYiClient.NoticeInfo>>(emptyList())
+    val noticeList: StateFlow<List<RuoYiClient.NoticeInfo>> = _noticeList.asStateFlow()
 
     private val _historyRecords = MutableStateFlow<List<HistoryRecord>>(emptyList())
     val historyRecords: StateFlow<List<HistoryRecord>> = _historyRecords.asStateFlow()
@@ -267,6 +271,18 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
      */
     fun dismissUpdateDialog() {
         _updateInfo.value = null
+    }
+
+    fun checkAnnouncement() {
+        viewModelScope.launch(Dispatchers.IO) {
+            RuoYiClient.getNoticeList().onSuccess { list ->
+                _noticeList.value = list
+            }
+        }
+    }
+
+    fun dismissNotice() {
+        _noticeList.value = emptyList()
     }
 
     fun loadRecords() {

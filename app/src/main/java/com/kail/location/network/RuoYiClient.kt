@@ -218,6 +218,47 @@ object RuoYiClient {
         }.onFailure { KailLog.w(null, TAG, "getPlans failed: ${it.message}") }
     }
 
+    data class NoticeInfo(
+        val id: Long,
+        val title: String,
+        val type: Int,
+        val content: String,
+        val createTime: String
+    )
+
+    suspend fun getNoticeList(): Result<List<NoticeInfo>> {
+        return runCatching {
+            val url = "$baseUrl/system/notice/list"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .header("Content-Type", JSON_TYPE)
+                .withTenant()
+                .build()
+
+            val response = okHttpClient.newCall(request).execute()
+            val body = response.body?.string() ?: throw Exception("Empty response")
+            val root = JSONObject(body)
+            val code = root.optInt("code", -1)
+            if (code != 0) {
+                throw Exception(root.optString("msg", "获取公告失败"))
+            }
+            val arr = root.optJSONArray("data") ?: return@runCatching emptyList()
+            val list = mutableListOf<NoticeInfo>()
+            for (i in 0 until arr.length()) {
+                val item = arr.getJSONObject(i)
+                list.add(NoticeInfo(
+                    id = item.getLong("id"),
+                    title = item.optString("title", ""),
+                    type = item.optInt("type", 0),
+                    content = item.optString("content", ""),
+                    createTime = item.optString("createTime", "")
+                ))
+            }
+            list
+        }.onFailure { KailLog.w(null, TAG, "getNoticeList failed: ${it.message}") }
+    }
+
     suspend fun getSubscriptionStatus(token: String): Result<SubscriptionStatus> {
         return runCatching {
             val url = "$baseUrl/member/subscription/status"

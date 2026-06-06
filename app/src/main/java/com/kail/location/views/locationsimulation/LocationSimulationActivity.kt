@@ -20,6 +20,8 @@ import android.widget.Toast
 import com.kail.location.views.locationpicker.LocationPickerActivity
 import com.kail.location.views.navigationsimulation.NavigationSimulationActivity
 import com.kail.location.utils.GoUtils
+import com.kail.location.views.common.AnnouncementDialog
+import androidx.compose.runtime.LaunchedEffect
 
 
 /**
@@ -51,8 +53,13 @@ class LocationSimulationActivity : BaseActivity() {
                 val historyRecords by viewModel.historyRecords.collectAsState()
                 val selectedRecordId by viewModel.selectedRecordId.collectAsState()
                 val runMode by viewModel.runMode.collectAsState()
+                val noticeList by viewModel.noticeList.collectAsState()
 
                 val version = packageManager.getPackageInfo(packageName, 0).versionName ?: ""
+
+                LaunchedEffect(Unit) {
+                    viewModel.checkAnnouncement()
+                }
 
                 LocationSimulationScreen(
                     locationInfo = locationInfo,
@@ -155,6 +162,13 @@ class LocationSimulationActivity : BaseActivity() {
                     appVersion = version,
                     onCheckUpdate = { viewModel.checkUpdate(this) }
                 )
+
+                if (noticeList.isNotEmpty()) {
+                    AnnouncementDialog(
+                        notices = noticeList,
+                        onDismiss = { viewModel.dismissNotice() }
+                    )
+                }
             }
         }
 
